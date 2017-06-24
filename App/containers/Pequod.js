@@ -3,12 +3,20 @@ import { connect } from 'react-redux';
 import MapView from '../components/MapView';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
+import { REGION_UPDATE, REGION_UPDATE_COMPLETE } from '../constants';
 
-const Pequod = ({ errorMessage, location, points, region }) => {
+const Pequod = ({ dispatch, errorMessage, location, points, region }) => {
   if (errorMessage) {
     return <Error message={errorMessage} />;
   } else if (location) {
-    return <MapView points={points} region={region} />;
+    return (
+      <MapView
+        points={points}
+        region={region}
+        onRegionChange={region => dispatch({ type: REGION_UPDATE, region })}
+        onRegionChangeComplete={() => dispatch({ type: REGION_UPDATE_COMPLETE })}
+      />
+    );
   } else {
     return <Loading />
   }

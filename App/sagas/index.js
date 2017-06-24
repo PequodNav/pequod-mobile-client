@@ -1,8 +1,11 @@
-import { call, put, all } from 'redux-saga/effects';
+import { call, put, all, takeLatest, select } from 'redux-saga/effects';
 import { Location, Permissions } from 'expo';
-import { GRANTED, PERMISSION_ERROR, ERROR, LOCATION } from '../constants';
+import { GRANTED, PERMISSION_ERROR, ERROR, LOCATION, REGION_UPDATE_COMPLETE, POINT_DATA } from '../constants';
 
-export function* getLocationSaga() {
+const BASE_URL = 'http://pequod.us-east-1.elasticbeanstalk.com';
+const EARTH_RADIUS = 3959;
+
+function* getLocation() {
   const { status } = yield call(Permissions.askAsync, Permissions.LOCATION);
   if (status !== GRANTED) {
     yield put({ type: ERROR, message: PERMISSION_ERROR });
@@ -17,9 +20,26 @@ export function* getLocationSaga() {
   }});
 }
 
+function* updateRegion(action) {
+  try {
+    const { latitude, longitude, latitudeDelta, longitudeDelta } = yield select(state => state.region);
+    const distance = 2 * Math.max(latitudeDelta, longitudeDelta) * EARTH_RADIUS;
+    const response = yield call(fetch, `${BASE_URL}/points?lat=${latitude}&lng=${longitude}&distance=${distance}&limit=500`);
+    const points = yield call(response.json, null);
+    yield put({ type: POINT_DATA, points });
+  } catch (error) {
+    console.error('failed point fetch', error);
+  }
+}
+
+function* watchRegion() {
+  yield takeLatest(REGION_UPDATE_COMPLETE, updateRegion);
+}
+
 // single entry point to start all Sagas at once
 export default function* rootSaga() {
   yield all([
-    getLocationSaga(),
+    getLocation(),
+    watchRegion(),
   ])
 }
