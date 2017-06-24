@@ -4,13 +4,15 @@ import { Provider } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
 import Pequod from './containers/Pequod';
 import PequodApp from './reducers';
+import rootSaga from './sagas';
 
-// create a store that has redux-thunk middleware enabled
-const createStoreWithMiddleware = applyMiddleware(
-  createSagaMiddleware()
-)(createStore);
-
-const store = createStoreWithMiddleware(PequodApp);
+// create a store that has redux-saga enabled
+const sagaMiddleware = createSagaMiddleware();
+const store = createStore(
+  PequodApp,
+  applyMiddleware(sagaMiddleware)
+);
+sagaMiddleware.run(rootSaga);
 
 const Root = () => (
   <Provider store={store}>

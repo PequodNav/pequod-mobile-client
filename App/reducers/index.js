@@ -1,3 +1,5 @@
+import { ERROR, LOCATION } from '../constants';
+
 const initialState = {
   errorMessage: null,
   location: null,
@@ -12,6 +14,17 @@ const initialState = {
 
 export default function reduce(state = initialState, action) {
   switch (action.type) {
+    case ERROR:
+      return Object.assign({}, state, {
+        errorMessage: action.message,
+      });
+
+    case LOCATION:
+      return Object.assign({}, state, {
+        location: action.location,
+        region: action.region,
+      });
+
     default:
       return state;
   }
