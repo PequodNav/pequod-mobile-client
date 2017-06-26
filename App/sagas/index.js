@@ -45,7 +45,7 @@ function* getPoints(action) {
   // top left corner and work our way around making sure to end where we started to
   // close off the polygon.
   const coordinates = [
-    [ [lon - lonD, lat - latD], [lon + lonD, lat - latD], [lon + lonD, lat + latD], [lon - lonD, lat + latD], [lon - lonD, lat - latD]]
+    [ [lon - lonD / 2, lat - latD / 2], [lon + lonD / 2, lat - latD / 2], [lon + lonD / 2, lat + latD / 2], [lon - lonD / 2, lat + latD / 2], [lon - lonD / 2, lat - latD / 2]]
   ];
   yield call(fetchPoints, { coordinates });
 }
