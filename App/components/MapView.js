@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapView } from 'expo';
+import PointTooltip from './PointTooltip';
 
 export default ({ points, region, onRegionChange }) => (
   <MapView
@@ -16,12 +17,11 @@ export default ({ points, region, onRegionChange }) => (
           latitude: point.loc.coordinates[1],
           longitude: point.loc.coordinates[0]
         }}
-        title={point.aidName}
-        description={point.source.indexOf('weekly') > -1 ?
-          `c:${point.characteristic}, h:${point.height}, rng:${point.range}, s:${point.structure}, rmx:${point.remarks}` :
-          `${point.summary} (${point.type}, ${point.source})`
-        }
-      />
+      >
+        <MapView.Callout tooltip={false}>
+          <PointTooltip {...point} />
+        </MapView.Callout>
+      </MapView.Marker>
     ))}
   </MapView>
 );
