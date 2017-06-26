@@ -61,6 +61,14 @@ export default function reduce(state = initialState, action) {
         pointsLoadingErrorMessage: typeof action.error === 'string' ? action.error : 'Failed loading points',
       });
 
+    case ActionTypes.CLEAR_POINTS:
+      return Object.assign({}, state, {
+        pointsCache: {},
+        points: [],
+        pointsLoading: false,
+        pointsLoadingErrorMessage: '',
+      });
+
     default:
       return state;
   }

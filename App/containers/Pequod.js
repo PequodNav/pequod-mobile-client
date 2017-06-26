@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import MapView from '../components/MapView';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
+import ClearPoints from '../components/ClearPoints';
 import LoadPoints from '../components/LoadPoints';
-import { regionUpdate, loadRequest } from '../actions';
+import { regionUpdate, loadRequest, clearPoints } from '../actions';
 
 const Pequod = ({ dispatch, errorMessage, points, pointsLoading, region }) => {
   if (errorMessage) {
@@ -20,10 +21,15 @@ const Pequod = ({ dispatch, errorMessage, points, pointsLoading, region }) => {
           region={region}
           onRegionChange={region => dispatch(regionUpdate(region))}
         />
-        <LoadPoints
-          handleLoad={() => dispatch(loadRequest())}
-          pointsLoading={pointsLoading}
-        />
+        <View style={styles.buttonContainer}>
+          <LoadPoints
+            handleLoad={() => dispatch(loadRequest())}
+            pointsLoading={pointsLoading}
+          />
+          <ClearPoints
+            handleClear={() => dispatch(clearPoints())}
+          />
+        </View>
       </View>
     );
   }
@@ -32,6 +38,14 @@ const Pequod = ({ dispatch, errorMessage, points, pointsLoading, region }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    flexDirection: 'row',
+    bottom: 10,
+    left: 10,
+    right: 10,
+    justifyContent: 'space-between',
   },
 });
 
