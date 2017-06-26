@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapView } from 'expo';
 import PointTooltip from './PointTooltip';
+import buoyImg from '../assets/buoy-50.png';
 
 export default ({ points, region, onRegionChange }) => (
   <MapView
@@ -17,6 +18,7 @@ export default ({ points, region, onRegionChange }) => (
           latitude: point.loc.coordinates[1],
           longitude: point.loc.coordinates[0]
         }}
+        image={point.aidName.toLowerCase().indexOf('buoy') > -1 ? buoyImg : null}
       >
         <MapView.Callout tooltip={false}>
           <PointTooltip {...point} />
