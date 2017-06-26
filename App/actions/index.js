@@ -14,7 +14,7 @@ export const POINTS = createRequestTypes('POINTS');
 export const ERROR = 'ERROR';
 export const SET_REGION = 'SET_REGION';
 export const REGION_UPDATE = 'REGION_UPDATE';
-export const REGION_UPDATE_COMPLETE = 'REGION_UPDATE_COMPLETE';
+export const LOAD_REQUEST = 'LOAD_REQUEST';
 
 function action(type, payload = {}) {
   return { type, ...payload };
@@ -29,4 +29,4 @@ export const points = {
 export const error = message => action(ERROR, { message });
 export const setRegion = region => action(SET_REGION, { region });
 export const regionUpdate = region => action(REGION_UPDATE, { region });
-export const regionUpdateComplete = () => action(REGION_UPDATE_COMPLETE);
+export const loadRequest = () => action(LOAD_REQUEST);

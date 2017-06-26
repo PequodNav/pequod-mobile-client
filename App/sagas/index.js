@@ -2,7 +2,7 @@ import { delay } from 'redux-saga';
 import { call, put, all, takeLatest, select } from 'redux-saga/effects';
 import { Location, Permissions } from 'expo';
 import { api } from '../services';
-import { points, error, setRegion, REGION_UPDATE_COMPLETE } from '../actions';
+import { points, error, setRegion, LOAD_REQUEST } from '../actions';
 import { getRegion } from '../reducers/selectors';
 
 /**
@@ -53,14 +53,14 @@ function* getPoints(action) {
 /**
  * When the region update completes, fetch points for the current region
  */
-function* watchRegion() {
-  yield takeLatest(REGION_UPDATE_COMPLETE, getPoints);
+function* watchLoadRequest() {
+  yield takeLatest(LOAD_REQUEST, getPoints);
 }
 
 // single entry point to start all Sagas at once
 export default function* rootSaga() {
   yield all([
     getLocation(),
-    watchRegion(),
+    watchLoadRequest(),
   ])
 }

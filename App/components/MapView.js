@@ -1,12 +1,11 @@
 import React from 'react';
 import { MapView } from 'expo';
 
-export default ({ points, region, onRegionChange, onRegionChangeComplete }) => (
+export default ({ points, region, onRegionChange }) => (
   <MapView
     style={{ flex: 1 }}
     region={region}
     onRegionChange={region => onRegionChange(region)}
-    onRegionChangeComplete={() => onRegionChangeComplete()}
     showsUserLocation={true}
     showsTraffic={false}
   >
