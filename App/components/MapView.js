@@ -18,7 +18,10 @@ export default ({ points, region, onRegionChange, onRegionChangeComplete }) => (
           longitude: point.loc.coordinates[0]
         }}
         title={point.aidName}
-        description={`${point.summary} (${point.type}, ${point.lnmSource})`}
+        description={point.source.indexOf('weekly') > -1 ?
+          `c:${point.characteristic}, h:${point.height}, rng:${point.range}, s:${point.structure}, rmx:${point.remarks}` :
+          `${point.summary} (${point.type}, ${point.source})`
+        }
       />
     ))}
   </MapView>
