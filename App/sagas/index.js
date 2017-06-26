@@ -1,10 +1,9 @@
+import { delay } from 'redux-saga';
 import { call, put, all, takeLatest, select } from 'redux-saga/effects';
 import { Location, Permissions } from 'expo';
 import { api } from '../services';
 import { points, error, setRegion, REGION_UPDATE_COMPLETE } from '../actions';
 import { getRegion } from '../reducers/selectors';
-
-const EARTH_RADIUS = 3959;
 
 /**
  * Get the users location and set the region based on it
@@ -29,7 +28,7 @@ function* getLocation() {
  */
 function* fetchPoints(apiArgs) {
   yield put(points.request());
-  const { response, error } = yield call(api.fetchPoints, apiArgs);
+  const { response, error } = yield call(api.fetchPointsWithin, apiArgs);
   if (response) {
     yield put(points.success(response));
   } else {
@@ -41,9 +40,14 @@ function* fetchPoints(apiArgs) {
  * function generator for getting points
  */
 function* getPoints(action) {
-  const { latitude, longitude, latitudeDelta, longitudeDelta } = yield select(getRegion);
-  const distance = 2 * Math.max(latitudeDelta, longitudeDelta) * EARTH_RADIUS;
-  yield call(fetchPoints, { latitude, longitude, distance });
+  const { latitude: lat, longitude: lon, latitudeDelta: latD, longitudeDelta: lonD } = yield select(getRegion);
+  // build our coordinates area specifying what area we want points in. start at the
+  // top left corner and work our way around making sure to end where we started to
+  // close off the polygon.
+  const coordinates = [
+    [ [lon - lonD, lat - latD], [lon + lonD, lat - latD], [lon + lonD, lat + latD], [lon - lonD, lat + latD], [lon - lonD, lat - latD]]
+  ];
+  yield call(fetchPoints, { coordinates });
 }
 
 /**

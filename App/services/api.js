@@ -17,5 +17,7 @@ function callApi(endpoint) {
 }
 
 // api services
-export const fetchPoints = ({ latitude, longitude, distance, limit = 500 }) =>
-  callApi(`points?lat=${latitude}&lng=${longitude}&distance=${distance}&limit=${limit}`);
+export const fetchPointsNear = ({ latitude, longitude, distance, limit = 500 }) =>
+  callApi(`points/near?lat=${latitude}&lng=${longitude}&distance=${distance}&limit=${limit}`);
+export const fetchPointsWithin = ({ coordinates = []}) =>
+  callApi(`points/within?coordinates=${JSON.stringify(coordinates)}`);
