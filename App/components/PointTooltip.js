@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-export default ({ aidName, source, summary, type, characteristic, height, range, structure, remarks, lightListNumber }) =>
+export default ({ aidName, source, summary, type, characteristic, height, range, structure, lightListNumber }) =>
   <View>
     <Text>{aidName}</Text>
     {source ? <Text>{`source: ${source}`}</Text> : null}
@@ -11,6 +11,5 @@ export default ({ aidName, source, summary, type, characteristic, height, range,
     {height ? <Text>{`height: ${height}`}</Text> : null}
     {range ? <Text>{`range: ${range}`}</Text> : null}
     {structure ? <Text>{`structure: ${structure}`}</Text> : null}
-    {remarks ? <Text>{`remarks: ${remarks}`}</Text> : null}
     {lightListNumber ? <Text>{`lightListNumber: ${lightListNumber}`}</Text> : null}
   </View>;
