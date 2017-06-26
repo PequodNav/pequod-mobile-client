@@ -4,6 +4,7 @@ const initialState = {
   errorMessage: null,
   location: null,
   points: [],
+  pointsCache: {},
   region: {
     latitude: null,
     longitude: null,
@@ -30,8 +31,13 @@ export default function reduce(state = initialState, action) {
       });
 
     case ActionTypes.POINTS.SUCCESS:
+      const newPointsCache = Object.assign({}, state.pointsCache);
+      action.points.forEach(point => {
+        newPointsCache[point._id] = point;
+      });
       return Object.assign({}, state, {
-        points: action.points,
+        pointsCache: newPointsCache,
+        points: Object.keys(newPointsCache).map(pointId => newPointsCache[pointId]),
       });
 
     default:
