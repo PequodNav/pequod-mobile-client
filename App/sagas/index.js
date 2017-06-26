@@ -1,39 +1,56 @@
 import { call, put, all, takeLatest, select } from 'redux-saga/effects';
 import { Location, Permissions } from 'expo';
-import { GRANTED, PERMISSION_ERROR, ERROR, LOCATION, REGION_UPDATE_COMPLETE, POINT_DATA } from '../constants';
+import { api } from '../services';
+import { points, error, setRegion, REGION_UPDATE_COMPLETE } from '../actions';
+import { getRegion } from '../reducers/selectors';
 
-const BASE_URL = 'http://pequod.us-east-1.elasticbeanstalk.com';
 const EARTH_RADIUS = 3959;
 
+/**
+ * Get the users location and set the region based on it
+ */
 function* getLocation() {
   const { status } = yield call(Permissions.askAsync, Permissions.LOCATION);
-  if (status !== GRANTED) {
-    yield put({ type: ERROR, message: PERMISSION_ERROR });
+  if (status !== 'granted') {
+    yield put(error('Permission to access location was denied'));
   }
 
-  const location = yield call(Location.getCurrentPositionAsync, {});
-  yield put({ type: LOCATION, location, region: {
-    latitude: location.coords.latitude,
-    longitude: location.coords.longitude,
+  const userLocation = yield call(Location.getCurrentPositionAsync, {});
+  yield put(setRegion({
+    latitude: userLocation.coords.latitude,
+    longitude: userLocation.coords.longitude,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
-  }});
+  }));
 }
 
-function* updateRegion(action) {
-  try {
-    const { latitude, longitude, latitudeDelta, longitudeDelta } = yield select(state => state.region);
-    const distance = 2 * Math.max(latitudeDelta, longitudeDelta) * EARTH_RADIUS;
-    const response = yield call(fetch, `${BASE_URL}/points?lat=${latitude}&lng=${longitude}&distance=${distance}&limit=500`);
-    const points = yield call(response.json, null);
-    yield put({ type: POINT_DATA, points });
-  } catch (error) {
-    console.error('failed point fetch', error);
+/**
+ * fetch subroutine for getting points. can eventually be abstracted, probably.
+ */
+function* fetchPoints(apiArgs) {
+  yield put(points.request());
+  const { response, error } = yield call(api.fetchPoints, apiArgs);
+  if (response) {
+    yield put(points.success(response));
+  } else {
+    yield put(points.failure(error));
   }
 }
 
+/**
+ * function generator for getting points
+ */
+function* getPoints(action) {
+  const { latitude, longitude, latitudeDelta, longitudeDelta } = yield select(getRegion);
+  const distance = 2 * Math.max(latitudeDelta, longitudeDelta) * EARTH_RADIUS;
+  yield call(fetchPoints, { latitude, longitude, distance });
+}
+
+/**
+ * When the region update completes, fetch points for the current region
+ */
 function* watchRegion() {
-  yield takeLatest(REGION_UPDATE_COMPLETE, updateRegion);
+  yield takeLatest(REGION_UPDATE_COMPLETE, getPoints);
 }
 
 // single entry point to start all Sagas at once

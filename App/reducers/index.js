@@ -1,4 +1,4 @@
-import { ERROR, LOCATION, REGION_UPDATE, POINT_DATA } from '../constants';
+import * as ActionTypes from '../actions';
 
 const initialState = {
   errorMessage: null,
@@ -14,23 +14,22 @@ const initialState = {
 
 export default function reduce(state = initialState, action) {
   switch (action.type) {
-    case ERROR:
+    case ActionTypes.ERROR:
       return Object.assign({}, state, {
         errorMessage: action.message,
       });
 
-    case LOCATION:
-      return Object.assign({}, state, {
-        location: action.location,
-        region: action.region,
-      });
-
-    case REGION_UPDATE:
+    case ActionTypes.SET_REGION:
       return Object.assign({}, state, {
         region: action.region,
       });
 
-    case POINT_DATA:
+    case ActionTypes.REGION_UPDATE:
+      return Object.assign({}, state, {
+        region: action.region,
+      });
+
+    case ActionTypes.POINTS.SUCCESS:
       return Object.assign({}, state, {
         points: action.points,
       });
