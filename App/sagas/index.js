@@ -1,7 +1,6 @@
 import { delay } from 'redux-saga';
 import { call, put, all, takeLatest, select } from 'redux-saga/effects';
-import { Location, Permissions } from 'expo';
-import { api } from '../services';
+import { api, location } from '../services';
 import { points, error, setRegion, LOAD_REQUEST } from '../actions';
 import { getRegion } from '../reducers/selectors';
 
@@ -9,18 +8,17 @@ import { getRegion } from '../reducers/selectors';
  * Get the users location and set the region based on it
  */
 function* getLocation() {
-  const { status } = yield call(Permissions.askAsync, Permissions.LOCATION);
-  if (status !== 'granted') {
+  try {
+    const userLocation = yield call(location.getLocation);
+    yield put(setRegion({
+      latitude: userLocation.coords.latitude,
+      longitude: userLocation.coords.longitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    }));
+  } catch ({ errorMessage }) {
     yield put(error('Permission to access location was denied'));
   }
-
-  const userLocation = yield call(Location.getCurrentPositionAsync, {});
-  yield put(setRegion({
-    latitude: userLocation.coords.latitude,
-    longitude: userLocation.coords.longitude,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  }));
 }
 
 /**
