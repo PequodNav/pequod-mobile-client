@@ -44,8 +44,10 @@ function* getPoints(action) {
   // build our coordinates area specifying what area we want points in. start at the
   // top left corner and work our way around making sure to end where we started to
   // close off the polygon.
+  const left = lon - lonD / 2, right  = lon + lonD / 2;
+  const top  = lat - latD / 2, bottom = lat + latD / 2;
   const coordinates = [
-    [ [lon - lonD / 2, lat - latD / 2], [lon + lonD / 2, lat - latD / 2], [lon + lonD / 2, lat + latD / 2], [lon - lonD / 2, lat + latD / 2], [lon - lonD / 2, lat - latD / 2]]
+    [ [left, top], [right, top], [right, bottom], [left, bottom], [left, top]]
   ];
   yield call(fetchPoints, { coordinates });
 }
