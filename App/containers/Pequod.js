@@ -19,7 +19,7 @@ const Pequod = ({ dispatch, errorMessage, points, pointsLoading, region }) => {
         <MapView
           points={points}
           region={region}
-          onRegionChange={region => dispatch(regionUpdate(region))}
+          onRegionChange={newRegion => dispatch(regionUpdate(newRegion))}
         />
         <View style={styles.buttonContainer}>
           <LoadPoints

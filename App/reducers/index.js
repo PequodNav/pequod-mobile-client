@@ -9,6 +9,7 @@ const initialState = {
   pointsCache: {},
   pointsLoadingErrorMessage: '',
 
+  location: {},
   region: {
     latitude: null,
     longitude: null,
@@ -27,11 +28,17 @@ export default function reduce(state = initialState, action) {
     case ActionTypes.SET_REGION:
       return Object.assign({}, state, {
         region: action.region,
+        location: action.location,
       });
 
     case ActionTypes.REGION_UPDATE:
       return Object.assign({}, state, {
         region: action.region,
+      });
+
+    case ActionTypes.LOCATION_UPDATE:
+      return Object.assign({}, state, {
+        location: Object.assign({}, state.location, action.location),
       });
 
     case ActionTypes.POINTS.REQUEST:

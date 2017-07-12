@@ -1,7 +1,7 @@
-import { delay } from 'redux-saga';
-import { call, put, all, takeLatest, select } from 'redux-saga/effects';
+import { delay, eventChannel } from 'redux-saga';
+import { call, put, all, takeLatest, select, take } from 'redux-saga/effects';
 import { api, location } from '../services';
-import { points, error, setRegion, LOAD_REQUEST } from '../actions';
+import { points, error, setRegion, locationUpdate, LOAD_REQUEST } from '../actions';
 import { getRegion } from '../reducers/selectors';
 
 /**
@@ -10,15 +10,28 @@ import { getRegion } from '../reducers/selectors';
 function* getLocation() {
   try {
     const userLocation = yield call(location.getLocation);
-    yield put(setRegion({
+    yield put(setRegion(userLocation, {
       latitude: userLocation.coords.latitude,
       longitude: userLocation.coords.longitude,
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     }));
-  } catch ({ errorMessage }) {
-    yield put(error('Permission to access location was denied'));
+    // const channel = yield call(getLocationEventChannel)
+    // while (true) {
+    //   const location = yield take(channel);
+    //   yield put(locationUpdate(location));
+    // }
+  } catch (e) {
+    yield put(error(e.errorMessage || e.message || 'uh oh'));
   }
+}
+
+function getLocationEventChannel() {
+  return eventChannel((emitter) => {
+    let locationSubscription = {};
+    location.watchLocation(emitter).then(subscription => locationSubscription = subscription);
+    return () => locationSubscription.remove && locationSubscription.remove()
+  })
 }
 
 /**
